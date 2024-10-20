@@ -1,6 +1,11 @@
 from django.shortcuts import render
-from django.views.generic import ListView
+from django.urls import reverse_lazy
+from django.views.generic import ListView,DetailView,CreateView,UpdateView,DeleteView,FormView
+from .form import ContactForm
 from .models import Book
+from .form import BookForm
+from django.http import HttpResponse
+
 # Create your views here.
 
 
@@ -24,4 +29,45 @@ class ListOfPublishedBooks(ListView):
     #using custom book manager in model to fetch only the published books
     def get_queryset(self):
         return Book.objects.get_published_books()
+
+
+#a  view to show the details of a book
+class DetailsOfBook(DetailView):
+    model=Book
+    context_object_name='book'
+    template_name='book_detail.html'
+    
+
+#to add a new book
+
+class CreateBook(CreateView):
+    model=Book
+    form_class=BookForm
+    template_name='bookForm.html'
+    success_url=reverse_lazy('list')
+
+
+#to update a book
+
+class UpdateBook(UpdateView):
+    model=Book
+    form_class=BookForm
+    template_name='updateBook.html'
+    success_url=reverse_lazy('list')
+
+#to Delete a book
+
+class DeleteBook(DeleteView):
+    model=Book
+    template_name='deleteBook.html'
+    success_url=reverse_lazy('list')
+
+
+class ContactFormView(FormView):
+    template_name='contact_form.html'
+    form_class=ContactForm
+    success_url=reverse_lazy('contact_success')
+
+    def form_valid(self, form)-> HttpResponse:
+        return super().form_valid(form)
     
